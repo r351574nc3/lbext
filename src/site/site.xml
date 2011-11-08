@@ -14,13 +14,13 @@
     </skin>
 
     <body>
-        <menu name="rSmart Liquibase Extensions">
-          <item name="Overview" href="index.html"/>
-          <item name="Usage" href="usage.html"/>
-          <item name="API" href="apidocs/"/>
-          <item name="Screencasts" href="screencasts.html"/>
-        </menu>        
-        <menu ref="reports" />
+      <menu name="rSmart Liquibase Extensions">
+        <item name="Overview" href="index.html"/>
+        <item name="Usage" href="usage.html"/>
+        <item name="API" href="apidocs/"/>
+        <item name="Screencasts" href="screencasts.html"/>
+      </menu>        
+      <menu ref="reports" />
 
     </body>
     <poweredBy>
