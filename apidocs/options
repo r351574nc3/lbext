@@ -1,0 +1,24 @@
+-classpath
+'/Users/leo/projects/git/lbext/target/classes:/Users/leo/.m2/repository/org/liquibase/liquibase-core/2.0.2/liquibase-core-2.0.2.jar'
+-encoding
+'MacRoman'
+-protected
+-sourcepath
+'/Users/leo/projects/git/lbext/src/main/java'
+-author
+-bottom
+'Copyright &#169; 2011 <a href="http://kualigan.blogspot.com">Leo Przybylski</a>. All Rights Reserved.'
+-charset
+'UTF-8'
+-d
+'/Users/leo/projects/git/lbext/target/site/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'Liquibase Extensions 1.0.0 API'
+-link
+'http://java.sun.com/javase/6/docs/api'
+-use
+-version
+-windowtitle
+'Liquibase Extensions 1.0.0 API'
