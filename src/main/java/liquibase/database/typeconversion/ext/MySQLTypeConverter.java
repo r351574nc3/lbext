@@ -72,6 +72,16 @@ public class MySQLTypeConverter extends liquibase.database.typeconversion.core.M
         Types.REAL
         );
 
+    protected static final List<Integer> numeric = Arrays.asList(
+        Types.DECIMAL,
+        Types.NUMERIC,
+        Types.REAL,
+	Types.BIGINT,
+	Types.INTEGER,
+	Types.SMALLINT,
+	Types.TINYINT
+								);
+
     protected static final List<Integer> noParams = Arrays.asList(
 								  Types.BIGINT,
 								  Types.BOOLEAN,
@@ -110,8 +120,9 @@ public class MySQLTypeConverter extends liquibase.database.typeconversion.core.M
                 retval.append(",").append(referenceColumn.getDecimalDigits());
             }
             retval.append(")");
+
         }
-	else {
+	else if (numeric.contains(referenceColumn.getDataType())) {
 	    try {
 		return getSqlTypeName(Types.BIGINT);
 	    }
