@@ -239,9 +239,9 @@
     </profiles>
     
   <scm>
-    <connection>scm:git:git://github.com/r351574nc3/lbcopy.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/r351574nc3/lbcopy.git</developerConnection>
-    <url>https://github.com/r351574nc3/lbcopy</url>
+    <connection>scm:git:git://github.com/r351574nc3/lbext.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/r351574nc3/lbext.git</developerConnection>
+    <url>https://github.com/r351574nc3/lbext</url>
   </scm>
   
   <distributionManagement>
@@ -255,7 +255,7 @@
     </snapshotRepository>
       <site>
         <id>github-project-site</id>
-        <url>gitsite:git@github.com/r351574nc3/lbcopy</url>
+        <url>gitsite:git@github.com/r351574nc3/lbext</url>
       </site>
     </distributionManagement>
 </project>
