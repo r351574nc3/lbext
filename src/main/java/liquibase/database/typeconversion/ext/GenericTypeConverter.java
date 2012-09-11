@@ -54,7 +54,7 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 public class GenericTypeConverter extends liquibase.database.typeconversion.core.AbstractTypeConverter {
 
     public int getPriority() {
-        return EXTENSION_PRIORITY;
+        return -1 * EXTENSION_PRIORITY;
     }
     
     protected static final List<Integer> oneParam = Arrays.asList(
