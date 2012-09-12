@@ -42,6 +42,7 @@ import java.io.PrintStream;
 
 import java.sql.Blob;
 import java.sql.Clob;
+import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
