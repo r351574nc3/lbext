@@ -616,12 +616,17 @@ public class MigrateData extends AbstractChange {
         }
     }
 
+    @Override
+    public String getConfirmationMessage() {
+	return "";
+    }
+
     /**
      * Get the sourceDriverClass attribute on this object
      *
      * @return sourceDriverClass value
      */
-    public String getTemplate() {
+    public String getSourceDriverClass() {
         return this.sourceDriverClass;
     }
 
@@ -684,7 +689,7 @@ public class MigrateData extends AbstractChange {
      *
      * @param sourceUser value to set
      */
-    public void sourceUser(final String sourceUser) {
+    public void setSourceUser(final String sourceUser) {
         this.sourceUser = sourceUser;
     }
 
