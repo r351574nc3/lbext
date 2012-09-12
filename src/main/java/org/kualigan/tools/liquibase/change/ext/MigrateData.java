@@ -74,7 +74,10 @@ public class MigrateData extends AbstractChange {
      * Normally returns sql statements, but we're not going to return any. Just going fake it.
      */
     public SqlStatement[] generateStatements(Database database) {
-	
+	final Database target = null;
+	final Database source = null;
+
+	migrate(source, target);
         return new SqlStatement[]{};
     }
 
