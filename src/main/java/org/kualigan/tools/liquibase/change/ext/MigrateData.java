@@ -22,10 +22,13 @@ import liquibase.change.Change;
 import liquibase.database.Database;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.DatabaseException;
+import liquibase.exception.LiquibaseException;
+import liquibase.exception.MigrationFailedException;
 import liquibase.exception.ValidationErrors;
 import liquibase.executor.ExecutorService;
 import liquibase.logging.LogFactory;
 import liquibase.logging.Logger;
+import liquibase.logging.LogLevel;
 import liquibase.sql.Sql;
 import liquibase.sql.UnparsedSql;
 import liquibase.statement.SqlStatement;
@@ -36,6 +39,7 @@ import liquibase.change.core.DeleteDataChange;
 
 import java.io.PrintStream;
 
+import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -112,18 +116,23 @@ public class MigrateData extends AbstractChange {
     public SqlStatement[] generateStatements(Database database) {
 	final Database target = null;
 	final Database source = null;
-
-	migrate(source, target);
+	
+	try {
+	    migrate(source, target);
+	}
+	catch (Exception e) {
+	    throw new RuntimeException(e);
+	}
         return new SqlStatement[]{};
     }
 
-    public void migrate(final Database source, final Database target) throws DatabaseException {
+    public void migrate(final Database source, final Database target) throws LiquibaseException {
         setTarget(target);
         setSource(source);
         migrate();
     }
     
-    public void migrate() throws DatabaseException {
+    public void migrate() throws LiquibaseException {
         getLog().debug("Migrating data from " + source.getConnection().getURL() + " to " + target.getConnection().getURL());
 
         final Incrementor recordCountIncrementor = new Incrementor();
@@ -156,7 +165,7 @@ public class MigrateData extends AbstractChange {
 
     
         try {
-            final JdbcConnection targetDb = target.getConnection();
+            final JdbcConnection targetDb = (JdbcConnection) target.getConnection();
             if (targetDb.getMetaData().getDriverName().toLowerCase().contains("hsqldb")) {
                 Statement st = targetDb.createStatement();
                 st.execute("CHECKPOINT"); 
@@ -164,12 +173,12 @@ public class MigrateData extends AbstractChange {
             }
         }
         catch (Exception e) {
-            throw new DatabaseException(e.getMessage(), e);
+            throw new LiquibaseException(e.getMessage(), e);
         }        
     }
 
     protected void migrate(final String tableName, 
-                           final ProgressObservable observable) throws DatabaseException {
+                           final ProgressObservable observable) throws LiquibaseException {
         final JdbcConnection sourceDb = (JdbcConnection) getSource().getConnection();
         final JdbcConnection targetDb = (JdbcConnection) getTarget().getConnection();
 
@@ -282,7 +291,7 @@ public class MigrateData extends AbstractChange {
             }
         }
         catch (Exception e) {
-            throw new DatabaseException(e.getMessage(), e);
+            throw new LiquibaseException(e.getMessage(), e);
         }
         finally {
             if (sourceDb != null) {
@@ -334,14 +343,14 @@ public class MigrateData extends AbstractChange {
 
     protected PreparedStatement prepareStatement(final JdbcConnection conn, 
                                                  final String tableName, 
-                                                 final Map<String, Integer> columns) throws DatabaseException {
+                                                 final Map<String, Integer> columns) throws LiquibaseException {
         final String statement = getStatementBuffer(tableName, columns);
         
         try {
             return conn.prepareStatement(statement);
         }
         catch (Exception e) {
-            throw new DatabaseException(e.getMessage(), e);
+            throw new LiquibaseException(e.getMessage(), e);
         }
     }
 
@@ -400,7 +409,7 @@ public class MigrateData extends AbstractChange {
     /**
      * Get a list of table names available mapped to row counts
      */
-    protected Map<String, Integer> getTableData(final Incrementor incrementor) throws DatabaseException {
+    protected Map<String, Integer> getTableData(final Incrementor incrementor) throws LiquibaseException {
         JdbcConnection sourceConn = (JdbcConnection) getSource().getConnection();
         JdbcConnection targetConn = (JdbcConnection) getTarget().getConnection();
         final Map<String, Integer> retval = new HashMap<String, Integer>();
@@ -427,7 +436,7 @@ public class MigrateData extends AbstractChange {
             tableResults.close();
         }
         catch (Exception e) {
-            throw new DatabaseException(e.getMessage(), e);
+            throw new LiquibaseException(e.getMessage(), e);
         }
 
         try {
@@ -441,7 +450,7 @@ public class MigrateData extends AbstractChange {
             }
         }
         catch (Exception e) {
-            throw new DatabaseException(e.getMessage(), e);
+            throw new LiquibaseException(e.getMessage(), e);
         }
 
         for (String tableName : toRemove) {
@@ -451,7 +460,7 @@ public class MigrateData extends AbstractChange {
         return retval;
     }
 
-    protected Map<String, Integer> getColumnMap(final String tableName) throws DatabaseException {
+    protected Map<String, Integer> getColumnMap(final String tableName) throws LiquibaseException {
         final JdbcConnection targetDb = (JdbcConnection) target.getConnection();
         final JdbcConnection sourceDb = (JdbcConnection) source.getConnection();
         final Map<String,Integer> retval = new HashMap<String,Integer>();
@@ -469,7 +478,7 @@ public class MigrateData extends AbstractChange {
             state.close();
         }
         catch (Exception e) {
-            throw new DatabaseException(e.getMessage(), e);
+            throw new LiquibaseException(e.getMessage(), e);
         }
 
         for (final String column : retval.keySet()) {
@@ -486,7 +495,7 @@ public class MigrateData extends AbstractChange {
                 state.close();
             }
             catch (Exception e) {
-                throw new DatabaseException(e.getMessage(), e);
+                throw new LiquibaseException(e.getMessage(), e);
             }
         }
 
@@ -497,7 +506,7 @@ public class MigrateData extends AbstractChange {
         return retval;
     }
 
-    protected int getTableRecordCount(final JdbcConnection conn, final String tableName) throws DatabaseException {
+    protected int getTableRecordCount(final JdbcConnection conn, final String tableName) throws LiquibaseException {
         final String query = String.format(RECORD_COUNT_QUERY, tableName);
         Statement statement = null;
         try {
@@ -514,7 +523,7 @@ public class MigrateData extends AbstractChange {
                 getLog().debug("Tried insert statement " + query);
             }
             getLog().debug("Exception executing " + query);
-            throw new DatabaseException(e.getMessage(), e);
+            throw new LiquibaseException(e.getMessage(), e);
         }
         finally {
             try {
@@ -626,7 +635,7 @@ public class MigrateData extends AbstractChange {
      *
      * @return sourceDriverClass value
      */
-    public String getSourceDriverClass() {
+    public Class getSourceDriverClass() {
         return this.sourceDriverClass;
     }
 
