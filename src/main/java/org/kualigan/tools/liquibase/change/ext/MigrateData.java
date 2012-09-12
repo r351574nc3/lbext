@@ -34,12 +34,16 @@ import liquibase.statement.core.RuntimeStatement;
 
 import liquibase.change.core.DeleteDataChange;
 
+import java.io.PrintStream;
+
+import java.sql.Clob;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
+import java.sql.Types;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -57,6 +61,19 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  * @author Leo Przybylski
  */
 public class MigrateData extends AbstractChange {
+    private static final String[] carr = new String[] {"|", "\\", "-", "/"};
+    private static final String RECORD_COUNT_QUERY = "select count(*) as \"COUNT\" from %s";
+    private static final String SELECT_ALL_QUERY   = "select * from %s";
+    private static final String INSERT_STATEMENT   = "insert into %s (%s) values (%s)";
+    private static final String DATE_CONVERSION    = "TO_DATE('%s', 'YYYYMMDDHH24MISS')";
+    private static final String COUNT_FIELD        = "COUNT";
+    private static final String LIQUIBASE_TABLE    = "DATABASECHANGELOG";
+    private static final int[]  QUOTED_TYPES       = 
+        new int[] {Types.CHAR, Types.VARCHAR, Types.TIME, Types.LONGVARCHAR, Types.DATE, Types.TIMESTAMP};
+
+    private static final String HSQLDB_PUBLIC      = "PUBLIC";
+    private static final int    MAX_THREADS        = 3;
+
     private Database source;
     private Database target;
     private String sourceUrl;    
