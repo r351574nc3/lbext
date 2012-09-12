@@ -20,6 +20,7 @@ import java.math.BigInteger;
 import liquibase.change.AbstractChange;
 import liquibase.change.Change;
 import liquibase.database.Database;
+import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.DatabaseException;
 import liquibase.exception.ValidationErrors;
 import liquibase.executor.ExecutorService;
@@ -32,6 +33,21 @@ import liquibase.statement.core.RuntimeStatement;
 
 import liquibase.change.core.DeleteDataChange;
 
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.Statement;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Observer;
+import java.util.Observable;
+
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
 /**
@@ -40,6 +56,8 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  * @author Leo Przybylski
  */
 public class MigrateData extends AbstractChange {
+    private Database source;
+    private Database target;
     private String sourceUrl;    
     private String sourceUser;
     private String sourcePass;
@@ -368,7 +386,7 @@ public class MigrateData extends AbstractChange {
         JdbcConnection sourceConn = (JdbcConnection) getSource().getConnection();
         JdbcConnection targetConn = (JdbcConnection) getTarget().getConnection();
         final Map<String, Integer> retval = new HashMap<String, Integer>();
-        final Collection<String> toRemove = new ArrayList<String>();
+        final Collection<String> toRemove = new LinkedList<String>();
 
         getLog().debug("Looking up table names in schema " + getSource().getDefaultSchemaName());
         try {
@@ -419,7 +437,7 @@ public class MigrateData extends AbstractChange {
         final JdbcConnection targetDb = (JdbcConnection) target.getConnection();
         final JdbcConnection sourceDb = (JdbcConnection) source.getConnection();
         final Map<String,Integer> retval = new HashMap<String,Integer>();
-        final Collection<String> toRemove = new ArrayList<String>();
+        final Collection<String> toRemove = new LinkedList<String>();
         try {
             final Statement state = targetDb.createStatement();                
             final ResultSet altResults = state.executeQuery("select * from " + tableName + " where 1 = 0");
@@ -581,75 +599,75 @@ public class MigrateData extends AbstractChange {
     }
 
     /**
-     * Get the template attribute on this object
+     * Get the sourceDriverClass attribute on this object
      *
-     * @return template value
+     * @return sourceDriverClass value
      */
     public String getTemplate() {
-        return this.template;
+        return this.sourceDriverClass;
     }
 
     /**
-     * Set the template attribute on this object
+     * Set the sourceDriverClass attribute on this object
      *
-     * @param template value to set
+     * @param sourceDriverClass value to set
      */
-    public void setTemplate(final String template) {
-        this.template = template;
+    public void setSourceDriverClass(final Class sourceDriverClass) {
+        this.sourceDriverClass = sourceDriverClass;
     }
 
     /**
-     * Get the namespace attribute on this object
+     * Get the sourceSchema attribute on this object
      *
-     * @return namespace value
+     * @return sourceSchema value
      */
-    public String getNamespace() {
-        return this.namespace;
+    public String getSourceSchema() {
+        return this.sourceSchema;
     }
 
     /**
-     * Set the namespace attribute on this object
+     * Set the sourceSchema attribute on this object
      *
-     * @param namespace value to set
+     * @param sourceSchema value to set
      */
-    public void setNamespace(final String namespace) {
-        this.namespace = namespace;
+    public void setSourceSchema(final String sourceSchema) {
+        this.sourceSchema = sourceSchema;
     }
 
     /**
-     * Get the name attribute on this object
+     * Get the sourcePass attribute on this object
      *
-     * @return name value
+     * @return sourcePass value
      */
-    public String getName() {
-        return this.name;
+    public String getSourcePass() {
+        return this.sourcePass;
     }
 
     /**
-     * Set the name attribute on this object
+     * Set the sourcePass attribute on this object
      *
-     * @param name value to set
+     * @param sourcePass value to set
      */
-    public void setName(final String name) {
-        this.name = name;
+    public void setSourcePass(final String sourcePass) {
+        this.sourcePass = sourcePass;
     }
 
     /**
-     * Get the description attribute on this object
+     * Get the sourceUser attribute on this object
      *
-     * @return description value
+     * @return sourceUser value
      */
-    public String getDescription() {
-        return this.description;
+    public String getSourceUser() {
+        return this.sourceUser;
     }
 
     /**
-     * Set the description attribute on this object
+     * Set the sourceUser attribute on this object
      *
-     * @param description value to set
+     * @param sourceUser value to set
      */
-    public void setDescription(final String description) {
-        this.description = description;
+    public void sourceUser(final String sourceUser) {
+        this.sourceUser = sourceUser;
     }
 
     /**
