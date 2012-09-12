@@ -204,10 +204,10 @@ public class MigrateData extends AbstractChange {
                                     handleLob(toStatement, value, i);
                                 }
                                 catch (Exception e) {
-                                    if (getLog().isDebugEnabled()) {
-					// getLog().warn(String.format("Error processing %s.%s %s", tableName, columnName, columns.get(columnName)));
+                                    if (isDebugEnabled()) {
+					// getLog().warning(String.format("Error processing %s.%s %s", tableName, columnName, columns.get(columnName)));
 					if (Clob.class.isAssignableFrom(value.getClass())) {
-					    // getLog().warn("Got exception trying to insert CLOB with length" + ((Clob) value).length());
+					    // getLog().warning("Got exception trying to insert CLOB with length" + ((Clob) value).length());
 					}
                                         // e.printStackTrace();
                                     }
@@ -230,24 +230,24 @@ public class MigrateData extends AbstractChange {
                                 retry = false;
                                 if (sqle.getMessage().contains("ORA-00942")) {
                                     getLog().debug("Couldn't find " + tableName);
-                                    if (getLog().isDebugEnabled()) {
+                                    if (isDebugEnabled()) {
                                         getLog().debug("Tried insert statement " + getStatementBuffer(tableName, columns), sqle);
                                     }
                                 }
                                 else if (sqle.getMessage().contains("ORA-12519")) {
                                     retry = true;
-                                    if (getLog().isDebugEnabled()) {
+                                    if (isDebugEnabled()) {
                                         getLog().debug("Tried insert statement " + getStatementBuffer(tableName, columns), sqle);
                                     }
                                 }
                                 else if (sqle.getMessage().contains("IN or OUT")) {
-                                    if (getLog().isDebugEnabled()) {
+                                    if (isDebugEnabled()) {
                                         getLog().debug("Column count was " + columns.keySet().size(), sqle);
                                     }
                                 }
                                 else if (sqle.getMessage().contains("Error reading")) {
                                     if (retry_count > 5) {
-                                        if (getLog().isDebugEnabled()) {
+                                        if (isDebugEnabled()) {
                                             getLog().debug("Tried insert statement " + getStatementBuffer(tableName, columns), sqle);
                                         }
                                         retry = false;
@@ -255,8 +255,8 @@ public class MigrateData extends AbstractChange {
                                     retry_count++;
                                 }
                                 else {
-                                    if (getLog().isDebugEnabled()) {
-                                        // getLog().warn("Error executing: " + getStatementBuffer(tableName, columns), sqle);
+                                    if (isDebugEnabled()) {
+                                        // getLog().warning("Error executing: " + getStatementBuffer(tableName, columns), sqle);
 				    }
                                 }
                             }
@@ -740,6 +740,10 @@ public class MigrateData extends AbstractChange {
      */
     public void setTarget(final Database target) {
         this.source = source;
+    }
+
+    protected boolean isDebugEnabled() {
+	return getLog().getLogLevel() == LogLevel.DEBUG;
     }
 
     protected Logger getLog() {
