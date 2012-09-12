@@ -20,6 +20,7 @@ import java.math.BigInteger;
 import liquibase.change.AbstractChange;
 import liquibase.change.Change;
 import liquibase.database.Database;
+import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.DatabaseException;
 import liquibase.exception.LiquibaseException;
@@ -84,7 +85,7 @@ public class MigrateData extends AbstractChange {
     private String sourceUser;
     private String sourcePass;
     private String sourceSchema;
-    private Class  sourceDriverClass;
+    private String sourceDriverClass;
     
     public MigrateData() {
         super("MigrateData", "Migrating data from sourceUrl", EXTENSION_PRIORITY);
@@ -116,6 +117,8 @@ public class MigrateData extends AbstractChange {
     public SqlStatement[] generateStatements(Database database) {
 	final Database target = null;
 	final Database source = null;
+
+        sourceDriverClass = lookupDriverFor(sourceUrl);
 	
 	try {
 	    migrate(source, target);
@@ -126,12 +129,56 @@ public class MigrateData extends AbstractChange {
         return new SqlStatement[]{};
     }
 
+    protected Database createSourceDatabase() throws LiquibaseException {
+	final DatabaseFactory factory = DatabaseFactory.getInstance();
+	final Database retval = factory.findCorrectDatabaseImplementation(openConnection(sourceUrl, sourceUser, sourcePass, sourceDriverClass, ""));
+	retval.setDefaultSchemaName(sourceSchema);
+	return retval;
+    }
+
+    public String lookupDriverFor(final String url) {
+        for (final Database databaseImpl : DatabaseFactory.getInstance().getImplementedDatabases()) {
+            final String driver = databaseImpl.getDefaultDriver(url);
+            if (driver != null) {
+                return driver;
+            }
+        }
+        return null;
+    }
+
     public void migrate(final Database source, final Database target) throws LiquibaseException {
         setTarget(target);
         setSource(source);
         migrate();
     }
     
+    protected JdbcConnection openConnection(final String url, 
+                                            final String username, 
+                                            final String password, 
+                                            final String className, 
+                                            final String schema) throws LiquibaseException {
+        Connection retval = null;
+        int retry_count = 0;
+        final int max_retry = 5;
+        while (retry_count < max_retry) {
+            try {
+                getLog().debug("Loading schema " + schema + " at url " + url);
+                Class.forName(className);
+                retval = DriverManager.getConnection(url, username, password);
+                retval.setAutoCommit(true);
+            }
+            catch (Exception e) {
+                if (!e.getMessage().contains("Database lock acquisition failure") && !(e instanceof NullPointerException)) {
+                    throw new LiquibaseException(e.getMessage(), e);
+                }
+            }
+            finally {
+                retry_count++;
+            }
+        }
+        return new JdbcConnection(retval);
+    }
+
     public void migrate() throws LiquibaseException {
         getLog().debug("Migrating data from " + source.getConnection().getURL() + " to " + target.getConnection().getURL());
 
@@ -635,7 +682,7 @@ public class MigrateData extends AbstractChange {
      *
      * @return sourceDriverClass value
      */
-    public Class getSourceDriverClass() {
+    public String getSourceDriverClass() {
         return this.sourceDriverClass;
     }
 
@@ -644,7 +691,7 @@ public class MigrateData extends AbstractChange {
      *
      * @param sourceDriverClass value to set
      */
-    public void setSourceDriverClass(final Class sourceDriverClass) {
+    public void setSourceDriverClass(final String sourceDriverClass) {
         this.sourceDriverClass = sourceDriverClass;
     }
 
