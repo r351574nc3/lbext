@@ -650,21 +650,57 @@ public class MigrateData extends AbstractChange {
     }
 
     /**
-     * Get the active attribute on this object
+     * Get the sourceUrl attribute on this object
      *
-     * @return active value
+     * @return sourceUrl value
      */
-    public String getActive() {
-        return this.active;
+    public String getSourceUrl() {
+        return this.sourceUrl;
     }
 
     /**
-     * Set the active attribute on this object
+     * Set the sourceUrl attribute on this object
      *
-     * @param active value to set
+     * @param sourceUrl value to set
      */
-    public void setActive(final String active) {
-        this.active = active;
+    public void setSourceUrl(final String sourceUrl) {
+        this.sourceUrl = sourceUrl;
+    }
+
+    /**
+     * Get the source attribute on this object
+     *
+     * @return source value
+     */
+    public Database getSource() {
+        return this.source;
+    }
+
+    /**
+     * Set the source attribute on this object
+     *
+     * @param source value to set
+     */
+    public void setSource(final Database source) {
+        this.source = source;
+    }
+
+    /**
+     * Get the target attribute on this object
+     *
+     * @return target value
+     */
+    public Database getTarget() {
+        return this.target;
+    }
+
+    /**
+     * Set the target attribute on this object
+     *
+     * @param target value to set
+     */
+    public void setTarget(final Database target) {
+        this.source = source;
     }
 
     protected Logger getLog() {
