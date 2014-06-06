@@ -1,51 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	
-	<!-- 
-		The default build of this project targets a servlet 2.4 web container.  Profiles are provided for
-		targeting different environments.
-	 -->
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.rsmart.kuali.tools.liquibase</groupId>
-	<artifactId>rsmart-lb-extensions</artifactId>
-	<packaging>jar</packaging>
-	<name>Liquibase Extensions</name>
-	<version>1.0.0</version>
-	<description>Extensions to liquibase that make it more database agnostic</description>
-	<url>http://r351574nc3.github.com/lbext</url>
-	<organization>
-		<name>Leo Przybylski</name>
-		<url>http://kualigan.blogspot.com</url>
-	</organization>
-
-    <developers>
-      <developer>
-        <id>leo</id>
-        <name>Leo Przybylski</name>
-        <email>leo@rsmart.com</email>
-        <url>http://kualigan.blogspot.com</url>
-        <organization>rsmart</organization>
-        <organizationUrl>http://www.rsmart.com</organizationUrl>
-        <roles>
-          <role>developer</role>
-        </roles>
-        <timezone>-7</timezone>
-        <properties>
-          <picUrl>http://www.gravatar.com/avatar/6be04114e185b6fa626a0ee530db34e4.png</picUrl>
-        </properties>
-      </developer>
-    </developers>
-
-	<licenses>
-		<license>
-			<name>Leo Przybylski Educational Community License 2.0</name>
-			<url>http://www.opensource.org/licenses/ecl2.txt</url>
-			<distribution>manual</distribution>
-		</license>
-	</licenses>
-
-    <properties>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.kuali.pom</groupId>
+    <artifactId>kuali-maven</artifactId>
+    <version>1.4.6</version>
+  </parent>
+  <groupId>org.kualigan.liquibase</groupId>
+  <artifactId>kualigan-lb-extensions</artifactId>
+  <packaging>jar</packaging>
+  <name>Liquibase Extensions</name>
+  <version>1.0.9-SNAPSHOT</version>
+  <description>Extensions to liquibase that make it more database agnostic</description>
+  <url>http://r351574nc3.github.com/lbext</url>
+  <organization>
+    <name>Leo Przybylski</name>
+    <url>http://kualigan.blogspot.com</url>
+  </organization>
+  
+  <developers>
+    <developer>
+      <id>leo</id>
+      <name>Leo Przybylski</name>
+      <email>leo@rsmart.com</email>
+      <url>http://kualigan.blogspot.com</url>
+      <organization>rsmart</organization>
+      <organizationUrl>http://www.rsmart.com</organizationUrl>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <timezone>-7</timezone>
+      <properties>
+        <picUrl>http://www.gravatar.com/avatar/6be04114e185b6fa626a0ee530db34e4.png</picUrl>
+      </properties>
+    </developer>
+  </developers>
+  
+  <licenses>
+    <license>
+      <name>Leo Przybylski Educational Community License 2.0</name>
+      <url>http://www.opensource.org/licenses/ecl2.txt</url>
+      <distribution>manual</distribution>
+    </license>
+  </licenses>
+  
+  <properties>
       <ojdbc14.version>10.2.0.3.0</ojdbc14.version>
 
       <!-- define all plugin versions -->
@@ -208,13 +207,52 @@
       </dependency>
     </dependencies>
 
-    <scm>
-      <connection>scm:git:git://github.com/r351574nc3/lbext.git</connection>
-      <developerConnection>scm:git:git://github.com/r351574nc3/lbext.git</developerConnection>
-      <url>http://www.github.com/r351574nc3/lbext</url>
-    </scm>
+    <profiles>
+        <profile>
+            <id>kualigan-release</id>
+            <properties>
+                <kuali.release.profiles>kualigan-release</kuali.release.profiles>
+            </properties>
+            <build>
+                <plugins>
+                  <plugin>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <configuration>
+                      <updateReleaseInfo>true</updateReleaseInfo>
+                    </configuration>
+                  </plugin>
+                  <plugin>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <executions>
+                      <execution>
+                        <id>gpg</id>
+                        <phase>${kuali.gpg.phase}</phase>
+                        <goals>
+                          <goal>sign</goal>
+                        </goals>
+                      </execution>
+                    </executions>
+                  </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
     
-    <distributionManagement>
+  <scm>
+    <connection>scm:git:git://github.com/r351574nc3/lbext.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/r351574nc3/lbext.git</developerConnection>
+    <url>https://github.com/r351574nc3/lbext</url>
+  </scm>
+  
+  <distributionManagement>
+    <repository>
+      <id>sonatype-nexus-staging</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+    </repository>
+    <snapshotRepository>
+      <id>sonatype-nexus-snapshots</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
       <site>
         <id>github-project-site</id>
         <url>gitsite:git@github.com/r351574nc3/lbext</url>

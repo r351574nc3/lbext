@@ -35,6 +35,7 @@ import liquibase.database.Database;
 import liquibase.database.core.MySQLDatabase;
 import liquibase.database.structure.type.DataType;
 import liquibase.database.structure.type.DateTimeType;
+import liquibase.logging.LogFactory;
 import liquibase.exception.UnexpectedLiquibaseException;
 
 import java.lang.reflect.Field;
@@ -70,6 +71,28 @@ public class MySQLTypeConverter extends liquibase.database.typeconversion.core.M
         Types.NUMERIC,
         Types.REAL
         );
+
+    protected static final List<Integer> numeric = Arrays.asList(
+        Types.DECIMAL,
+        Types.NUMERIC,
+        Types.REAL,
+	Types.BIGINT,
+	Types.INTEGER,
+	Types.SMALLINT,
+	Types.TINYINT
+								);
+
+    protected static final List<Integer> noParams = Arrays.asList(
+								  Types.BIGINT,
+								  Types.BOOLEAN,
+								  Types.DATE,
+								  Types.INTEGER,
+								  Types.NULL,
+								  Types.SMALLINT,
+								  Types.TIME,
+								  Types.TIMESTAMP,
+								  Types.TINYINT
+								  );
     
     
     @Override
@@ -88,18 +111,36 @@ public class MySQLTypeConverter extends liquibase.database.typeconversion.core.M
         }
 
         
-        final boolean hasOneParam  = oneParam.contains(referenceColumn.getDataType());
-        final boolean hasTwoParams = twoParams.contains(referenceColumn.getDataType());
+        final boolean hasOneParam  = oneParam.contains(referenceColumn.getDataType()) && referenceColumn.getColumnSize() > 0;
+        final boolean hasTwoParams = twoParams.contains(referenceColumn.getDataType()) && referenceColumn.getDecimalDigits() > -1;
         
-
         if (hasOneParam || hasTwoParams) {
             retval.append("(").append(referenceColumn.getColumnSize());
             if (hasTwoParams) {
                 retval.append(",").append(referenceColumn.getDecimalDigits());
             }
             retval.append(")");
-        }
 
+        }
+	else if (numeric.contains(referenceColumn.getDataType())) {
+	    try {
+		return getSqlTypeName(Types.BIGINT);
+	    }
+	    catch (Exception e) {
+		return referenceColumn.getTypeName();
+	    }
+	}
+
+	if (referenceColumn.getDefaultValue() != null 
+	    && referenceColumn.getDefaultValue().toString().equalsIgnoreCase("sysdate")) {
+	    referenceColumn.setDefaultValue("NOW()");
+	    try {
+		return getSqlTypeName(Types.TIMESTAMP);
+	    }
+	    catch (Exception e) {
+		return referenceColumn.getTypeName();
+	    }
+	}
         
         return retval.toString();
     }
@@ -130,10 +171,10 @@ public class MySQLTypeConverter extends liquibase.database.typeconversion.core.M
     protected DataType getDataType(String columnTypeString, Boolean autoIncrement, String dataTypeName, String precision, String additionalInformation) {
         // Translate type to database-specific type, if possible
         DataType returnTypeName = null;
-        if (dataTypeName.equalsIgnoreCase("BIGINT")) {
+        if (dataTypeName.equalsIgnoreCase("NUMBER") 
+                   || dataTypeName.equalsIgnoreCase("BIGINT")) {
             returnTypeName = getBigIntType();
-        } else if (dataTypeName.equalsIgnoreCase("NUMBER") 
-                   || dataTypeName.equalsIgnoreCase("DECIMAL")
+        } else if (dataTypeName.equalsIgnoreCase("DECIMAL")
                    || dataTypeName.equalsIgnoreCase("NUMERIC")) {
             returnTypeName = getNumberType();
         } else if (dataTypeName.equalsIgnoreCase("BLOB")) {
@@ -146,9 +187,8 @@ public class MySQLTypeConverter extends liquibase.database.typeconversion.core.M
             returnTypeName = getClobType();
         } else if (dataTypeName.equalsIgnoreCase("CURRENCY")) {
             returnTypeName = getCurrencyType();
-        } else if (dataTypeName.equalsIgnoreCase("DATE") || dataTypeName.equalsIgnoreCase(getDateType().getDataTypeName())) {
-            returnTypeName = getDateType();
-        } else if (dataTypeName.equalsIgnoreCase("DATETIME") || dataTypeName.equalsIgnoreCase(getDateTimeType().getDataTypeName())) {
+        } else if (dataTypeName.equalsIgnoreCase("DATE") || dataTypeName.equalsIgnoreCase(getDateType().getDataTypeName())
+		   || dataTypeName.equalsIgnoreCase("DATETIME") || dataTypeName.equalsIgnoreCase(getDateTimeType().getDataTypeName())) {
             returnTypeName = getDateTimeType();
         } else if (dataTypeName.equalsIgnoreCase("DOUBLE")) {
             returnTypeName = getDoubleType();
@@ -193,4 +233,12 @@ public class MySQLTypeConverter extends liquibase.database.typeconversion.core.M
          return returnTypeName;
     }
 
+
+    protected void info(final String message) {
+	LogFactory.getLogger().info(message);
+    }
+
+    protected void debug(final String message) {
+	LogFactory.getLogger().debug(message);
+    }
 }

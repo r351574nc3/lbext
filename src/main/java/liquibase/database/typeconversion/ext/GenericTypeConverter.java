@@ -92,8 +92,8 @@ public class GenericTypeConverter extends liquibase.database.typeconversion.core
     }
 
 
-	@Override
-	public BooleanType getBooleanType() {
-		return new BooleanType.NumericBooleanType(getNumberType().getDataTypeName());
-	}
+    @Override
+    public BooleanType getBooleanType() {
+	return new BooleanType.NumericBooleanType(getNumberType().getDataTypeName());
+    }
 }
