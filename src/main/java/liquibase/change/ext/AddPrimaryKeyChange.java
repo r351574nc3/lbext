@@ -33,7 +33,7 @@ import liquibase.database.Database;
 import liquibase.database.core.DB2Database;
 import liquibase.database.core.SQLiteDatabase;
 import liquibase.database.core.SQLiteDatabase.AlterTableVisitor;
-import liquibase.database.structure.Index;
+import liquibase.structure.core.Index;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.AddPrimaryKeyStatement;
 import liquibase.statement.core.ReorganizeTableStatement;
@@ -53,7 +53,6 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 public class AddPrimaryKeyChange extends liquibase.change.core.AddPrimaryKeyChange {
     
     public AddPrimaryKeyChange() {
-        setPriority(EXTENSION_PRIORITY);
     }
 
     @Override

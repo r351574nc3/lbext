@@ -24,12 +24,12 @@ public class AddUniqueConstraintGenerator extends liquibase.sqlgenerator.core.Ad
 		String sql = null;
 		if (statement.getConstraintName() == null) {
 			sql = String.format("ALTER TABLE %s ADD UNIQUE (%s)"
-					, database.escapeTableName(null, statement.getTableName())
+					, database.escapeTableName(null, null, statement.getTableName())
 					, database.escapeColumnNameList(statement.getColumnNames())
 			);
 		} else {
 			sql = String.format("ALTER TABLE %s ADD CONSTRAINT %s UNIQUE (%s)"
-					, database.escapeTableName(null, statement.getTableName())
+					, database.escapeTableName(null, null, statement.getTableName())
 					, database.escapeConstraintName(statement.getConstraintName())
 					, database.escapeColumnNameList(statement.getColumnNames())
 			);

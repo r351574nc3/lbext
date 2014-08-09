@@ -29,7 +29,7 @@ import liquibase.change.AbstractChange;
 import liquibase.change.Change;
 import liquibase.change.ChangeMetaData;
 import liquibase.database.Database;
-import liquibase.database.structure.ForeignKeyConstraintType;
+import liquibase.structure.core.ForeignKeyConstraintType;
 import liquibase.exception.UnexpectedLiquibaseException;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.AddForeignKeyConstraintStatement;
@@ -43,7 +43,6 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  */
 public class AddForeignKeyConstraintChange extends liquibase.change.core.AddForeignKeyConstraintChange {
     public AddForeignKeyConstraintChange() {
-        setPriority(EXTENSION_PRIORITY);
     }
 
 
@@ -60,9 +59,12 @@ public class AddForeignKeyConstraintChange extends liquibase.change.core.AddFore
         }
 
         return new SqlStatement[]{
-                new AddForeignKeyConstraintStatement(getConstraintName(), null,
+                new AddForeignKeyConstraintStatement(getConstraintName(), 
+                                                     null,
+                                                     null,
                                                      getBaseTableName(),
                                                      getBaseColumnNames(),
+                                                     null,
                                                      null,
                                                      getReferencedTableName(),
                                                      getReferencedColumnNames())
@@ -70,7 +72,6 @@ public class AddForeignKeyConstraintChange extends liquibase.change.core.AddFore
                 .setInitiallyDeferred(initiallyDeferred)
                 .setOnUpdate(getOnUpdate())
                 .setOnDelete(getOnDelete())
-                .setReferencesUniqueColumn(getReferencesUniqueColumn())
         };
     }
 }

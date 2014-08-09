@@ -27,9 +27,7 @@ package liquibase.change.ext;
 
 import liquibase.change.*;
 import liquibase.database.Database;
-import liquibase.database.structure.type.DataType;
-import liquibase.database.typeconversion.TypeConverter;
-import liquibase.database.typeconversion.TypeConverterFactory;
+import liquibase.structure.core.DataType;
 import liquibase.exception.UnexpectedLiquibaseException;
 import liquibase.sqlgenerator.SqlGeneratorFactory;
 import liquibase.statement.*;
@@ -51,7 +49,6 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 public class CreateTableChange extends liquibase.change.core.CreateTableChange {
 
     public CreateTableChange() {
-        setPriority(EXTENSION_PRIORITY);
     }
 
     public void addColumn(ColumnConfig column) {

@@ -152,7 +152,7 @@ public class CreateTableGenerator extends liquibase.sqlgenerator.core.CreateTabl
                                 buffer.append(" ").append(autoIncrementClause);
                         }
                 } else {
-                    LogFactory.getLogger().warning(database.getTypeName()+" does not support autoincrement columns as request for "+(database.escapeTableName(null, statement.getTableName())));
+                    LogFactory.getLogger().warning(database.getDatabaseProductName()+" does not support autoincrement columns as request for "+(database.escapeTableName(null, null, statement.getTableName())));
                 }
             }
 
@@ -221,9 +221,9 @@ public class CreateTableGenerator extends liquibase.sqlgenerator.core.CreateTabl
                 }
             String referencesString = fkConstraint.getReferences();
             buffer.append(" FOREIGN KEY (")
-                    .append(database.escapeColumnName(null, statement.getTableName(), fkConstraint.getColumn()))
-                    .append(") REFERENCES ")
-                    .append(referencesString);
+                .append(database.escapeColumnName(null, null, statement.getTableName(), fkConstraint.getColumn()))
+                .append(") REFERENCES ")
+                .append(referencesString);
 
             if (fkConstraint.isDeleteCascade()) {
                 buffer.append(" ON DELETE CASCADE");
