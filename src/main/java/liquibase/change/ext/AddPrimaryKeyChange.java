@@ -59,13 +59,13 @@ public class AddPrimaryKeyChange extends liquibase.change.core.AddPrimaryKeyChan
     public SqlStatement[] generateStatements(Database database) {
         String schemaName = null;
 
-        AddPrimaryKeyStatement statement = new AddPrimaryKeyStatement(schemaName, getTableName(), getColumnNames(), getConstraintName());
+        AddPrimaryKeyStatement statement = new AddPrimaryKeyStatement(null, schemaName, getTableName(), getColumnNames(), getConstraintName());
         statement.setTablespace(getTablespace());
 
         if (database instanceof DB2Database) {
             return new SqlStatement[]{
                     statement,
-                    new ReorganizeTableStatement(schemaName, getTableName())
+                    new ReorganizeTableStatement(null, schemaName, getTableName())
             };
 //todo        } else if (database instanceof SQLiteDatabase) {
 //            // return special statements for SQLite databases

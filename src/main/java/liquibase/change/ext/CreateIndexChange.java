@@ -41,10 +41,10 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski (leo [at] rsmart.com)
  */
+@DatabaseChange(name="createIndex", description = "Creates an index on an existing column or set of columns.", priority = EXTENSION_PRIORITY, appliesTo = "index")
 public class CreateIndexChange extends liquibase.change.core.CreateIndexChange {
 
     public CreateIndexChange() {
-        setPriority(EXTENSION_PRIORITY);
     }
 
     public String getSchemaName() {
@@ -60,6 +60,7 @@ public class CreateIndexChange extends liquibase.change.core.CreateIndexChange {
 	    return new SqlStatement[]{
 			    new CreateIndexStatement(
 					    getIndexName(),
+                        null,
 					    getSchemaName(),
 					    getTableName(),
 					    this.isUnique(),

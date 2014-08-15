@@ -19,13 +19,13 @@ public class AddPrimaryKeyGenerator extends liquibase.sqlgenerator.core.AddPrima
         return EXTENSION_PRIORITY;
     }
 
-
-    public Sql[] generateSql(AddPrimaryKeyStatement statement, Database database, SqlGeneratorChain sqlGeneratorChain) {
+    
+    public Sql[] generateSql(final AddPrimaryKeyStatement statement, final Database database, final SqlGeneratorChain sqlGeneratorChain) {
         String sql;
         if (statement.getConstraintName() == null  || database instanceof MySQLDatabase || database instanceof SybaseASADatabase) {
-            sql = "ALTER TABLE " + database.escapeTableName(null, statement.getTableName()) + " ADD PRIMARY KEY (" + database.escapeColumnNameList(statement.getColumnNames()) + ")";
+            sql = "ALTER TABLE " + database.escapeTableName(null, null, statement.getTableName()) + " ADD PRIMARY KEY (" + database.escapeColumnNameList(statement.getColumnNames()) + ")";
         } else {
-            sql = "ALTER TABLE " + database.escapeTableName(null, statement.getTableName()) + " ADD CONSTRAINT " + database.escapeConstraintName(statement.getConstraintName()) + " PRIMARY KEY (" + database.escapeColumnNameList(statement.getColumnNames()) + ")";
+            sql = "ALTER TABLE " + database.escapeTableName(null, null, statement.getTableName()) + " ADD CONSTRAINT " + database.escapeConstraintName(statement.getConstraintName()) + " PRIMARY KEY (" + database.escapeColumnNameList(statement.getColumnNames()) + ")";
         }
 
         if (StringUtils.trimToNull(statement.getTablespace()) != null && database.supportsTablespaces()) {
