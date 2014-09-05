@@ -25,6 +25,7 @@
 // or implied, of Leo Przybylski.
 package liquibase.database.ext;
 
+import liquibase.CatalogAndSchema;
 import liquibase.exception.DatabaseException;
 
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
@@ -41,11 +42,16 @@ public class MySqlDatabase extends liquibase.database.core.MySQLDatabase {
     }
 
     @Override
-    public String getViewDefinition(String schemaName, String viewName) throws DatabaseException {
-        String retval = super.getViewDefinition(schemaName, viewName);
-        final String schemaStr = String.format("`%s`.", schemaName);
-        retval = retval.replaceAll(schemaStr.toLowerCase(), "");
-        retval = retval.replaceAll(schemaStr.toUpperCase(), "");
+    public boolean supportsSequences() {
+        return false;
+    }
+
+
+    @Override
+    public String getViewDefinition(final CatalogAndSchema schema, final String viewName) throws DatabaseException {
+        String retval = super.getViewDefinition(schema, viewName);
+        final String schemaStr = String.format("`%s`.", schema.getSchemaName());
+        retval = retval.replaceAll(schemaStr.toLowerCase().toUpperCase(), "");
         return retval;
     }
 }

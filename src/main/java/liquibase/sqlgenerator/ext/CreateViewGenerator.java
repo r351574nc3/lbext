@@ -48,8 +48,8 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 public class CreateViewGenerator extends liquibase.sqlgenerator.core.CreateViewGenerator {
     protected static List<SqlMappingHandler> replacements = Arrays.asList(
             new DecodeHandler(),
-	    new TruncHandler()
-									  );
+        new TruncHandler()
+                                      );
     
     @Override
     public int getPriority() {
@@ -59,34 +59,34 @@ public class CreateViewGenerator extends liquibase.sqlgenerator.core.CreateViewG
     public Sql[] generateSql(final CreateViewStatement statement, 
                              final Database database, 
                              final SqlGeneratorChain sqlGeneratorChain) {
-	CreateViewStatement genStatement = statement;
+        CreateViewStatement genStatement = statement;
         if (database instanceof liquibase.database.core.MySQLDatabase) {
-	    genStatement = createMySqlSafeStatement(statement);
-	}
-	return super.generateSql(genStatement, database, sqlGeneratorChain);
+            genStatement = createMySqlSafeStatement(statement);
+        }
+        return super.generateSql(genStatement, database, sqlGeneratorChain);
     }
 
     public CreateViewStatement createMySqlSafeStatement(final CreateViewStatement statement) {
-	final StringBuffer queryBuffer = new StringBuffer(statement.getSelectQuery());
-	
-	for (final SqlMappingHandler handler : replacements) {
-	    while(handler.matches(queryBuffer)) {
-		info("Got a match");
+        final StringBuffer queryBuffer = new StringBuffer(statement.getSelectQuery());
+        
+        for (final SqlMappingHandler handler : replacements) {
+            while(handler.matches(queryBuffer)) {
                 handler.translate(queryBuffer);
-	    }
-	}
-	
-	return new CreateViewStatement(statement.getSchemaName(), 
-				       statement.getViewName(), 
-				       queryBuffer.toString(), 
-				       statement.isReplaceIfExists());
+            }
+        }
+        
+        return new CreateViewStatement(null,
+                                       statement.getSchemaName(), 
+                                       statement.getViewName(), 
+                                       queryBuffer.toString(), 
+                                       statement.isReplaceIfExists());
     }
 
     protected void info(final String message) {
-	LogFactory.getLogger().info(message);
+    LogFactory.getLogger().info(message);
     }
 
     protected void debug(final String message) {
-	LogFactory.getLogger().debug(message);
+    LogFactory.getLogger().debug(message);
     }
 }

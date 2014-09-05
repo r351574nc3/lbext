@@ -55,7 +55,7 @@ public class CreateTableGenerator extends liquibase.sqlgenerator.core.CreateTabl
     
     @Override
     public ValidationErrors validate(CreateTableStatement createTableStatement, Database database, SqlGeneratorChain sqlGeneratorChain) {
-        ValidationErrors validationErrors = new ValidationErrors();
+        final ValidationErrors validationErrors = new ValidationErrors();
         validationErrors.checkRequiredField("tableName", createTableStatement.getTableName());
         validationErrors.checkRequiredField("columns", createTableStatement.getColumns());
         return validationErrors;
@@ -63,8 +63,8 @@ public class CreateTableGenerator extends liquibase.sqlgenerator.core.CreateTabl
 
     @Override
     public Sql[] generateSql(CreateTableStatement statement, Database database, SqlGeneratorChain sqlGeneratorChain) {
-            StringBuffer buffer = new StringBuffer();
-        buffer.append("CREATE TABLE ").append(database.escapeTableName(null, statement.getTableName())).append(" ");
+        final StringBuffer buffer = new StringBuffer();
+        buffer.append("CREATE TABLE ").append(database.escapeTableName(null, null, statement.getTableName())).append(" ");
         buffer.append("(");
         
         boolean isSinglePrimaryKeyColumn = statement.getPrimaryKeyConstraint() != null
@@ -72,11 +72,11 @@ public class CreateTableGenerator extends liquibase.sqlgenerator.core.CreateTabl
         
         boolean isPrimaryKeyAutoIncrement = false;
         
-        Iterator<String> columnIterator = statement.getColumns().iterator();
-        while (columnIterator.hasNext()) {
-            String column = columnIterator.next();
+        
+        for (final Iterator<String> columnIterator = statement.getColumns().iterator(); columnIterator.hasNext();) {
+            final String column = columnIterator.next();
             
-            buffer.append(database.escapeColumnName(null, statement.getTableName(), column));
+            buffer.append(database.escapeColumnName(null, null, statement.getTableName(), column));
             buffer.append(" ").append(statement.getColumnTypes().get(column));
             
             AutoIncrementConstraint autoIncrementConstraint = null;
@@ -140,7 +140,7 @@ public class CreateTableGenerator extends liquibase.sqlgenerator.core.CreateTabl
                     buffer.append(" CONSTRAINT ").append(((MSSQLDatabase) database).generateDefaultConstraintName(statement.getTableName(), column));
                 }
                 buffer.append(" DEFAULT ");
-                buffer.append(statement.getColumnTypes().get(column).convertObjectToString(defaultValue, database));
+                buffer.append(statement.getColumnTypes().get(column).objectToSql(defaultValue, database));
             }
 
             if (isAutoIncrementColumn) {
@@ -321,10 +321,10 @@ public class CreateTableGenerator extends liquibase.sqlgenerator.core.CreateTabl
     }
 
     protected void info(final String message) {
-	LogFactory.getLogger().info(message);
+    LogFactory.getLogger().info(message);
     }
 
     protected void debug(final String message) {
-	LogFactory.getLogger().debug(message);
+    LogFactory.getLogger().debug(message);
     }
 }

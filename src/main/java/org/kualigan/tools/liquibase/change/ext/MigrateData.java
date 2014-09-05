@@ -19,6 +19,7 @@ import java.math.BigInteger;
 
 import liquibase.change.AbstractChange;
 import liquibase.change.Change;
+import liquibase.change.ChangeMetaData;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
@@ -90,11 +91,12 @@ public class MigrateData extends AbstractChange {
     private String sourceDriverClass;
     
     public MigrateData() {
-        super("MigrateData", "Migrating data from sourceUrl", EXTENSION_PRIORITY);
-	setSourceUrl(System.getProperty("lb.copy.source.url"));
-	setSourceUser(System.getProperty("lb.copy.source.user"));
-	setSourcePass(System.getProperty("lb.copy.source.password"));
-	setSourceSchema(System.getProperty("lb.copy.source.schema"));
+        super();
+        // super("MigrateData", "Migrating data from sourceUrl", EXTENSION_PRIORITY);
+        setSourceUrl(System.getProperty("lb.copy.source.url"));
+        setSourceUser(System.getProperty("lb.copy.source.user"));
+        setSourcePass(System.getProperty("lb.copy.source.password"));
+        setSourceSchema(System.getProperty("lb.copy.source.schema"));
     }
     
     /**
@@ -117,25 +119,35 @@ public class MigrateData extends AbstractChange {
      * Normally returns sql statements, but we're not going to return any. Just going fake it.
      */
     public SqlStatement[] generateStatements(Database database) {
-	final Database target = null;
-	final Database source = null;
-
+        final Database target = null;
+        final Database source = null;
+        
         sourceDriverClass = lookupDriverFor(sourceUrl);
-	
-	try {
-	    migrate(source, target);
-	}
-	catch (Exception e) {
-	    throw new RuntimeException(e);
-	}
+        
+        try {
+            migrate(source, target);
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         return new SqlStatement[]{};
     }
 
+    /**
+     *
+     * From Liquibase 3.x. We need to update the this to modify the priority.
+     */
+    @Override
+    public ChangeMetaData createChangeMetaData() {
+        final ChangeMetaData retval = super.createChangeMetaData();
+        return retval;
+    }
+
     protected Database createSourceDatabase() throws LiquibaseException {
-	final DatabaseFactory factory = DatabaseFactory.getInstance();
-	final Database retval = factory.findCorrectDatabaseImplementation(openConnection(sourceUrl, sourceUser, sourcePass, sourceDriverClass, ""));
-	retval.setDefaultSchemaName(sourceSchema);
-	return retval;
+        final DatabaseFactory factory = DatabaseFactory.getInstance();
+        final Database retval = factory.findCorrectDatabaseImplementation(openConnection(sourceUrl, sourceUser, sourcePass, sourceDriverClass, ""));
+        retval.setDefaultSchemaName(sourceSchema);
+        return retval;
     }
 
     public String lookupDriverFor(final String url) {
@@ -263,10 +275,10 @@ public class MigrateData extends AbstractChange {
                                 }
                                 catch (Exception e) {
                                     if (isDebugEnabled()) {
-					// getLog().warning(String.format("Error processing %s.%s %s", tableName, columnName, columns.get(columnName)));
-					if (Clob.class.isAssignableFrom(value.getClass())) {
-					    // getLog().warning("Got exception trying to insert CLOB with length" + ((Clob) value).length());
-					}
+                    // getLog().warning(String.format("Error processing %s.%s %s", tableName, columnName, columns.get(columnName)));
+                    if (Clob.class.isAssignableFrom(value.getClass())) {
+                        // getLog().warning("Got exception trying to insert CLOB with length" + ((Clob) value).length());
+                    }
                                         // e.printStackTrace();
                                     }
                                 }
@@ -315,7 +327,7 @@ public class MigrateData extends AbstractChange {
                                 else {
                                     if (isDebugEnabled()) {
                                         // getLog().warning("Error executing: " + getStatementBuffer(tableName, columns), sqle);
-				    }
+                    }
                                 }
                             }
                         }
@@ -670,13 +682,13 @@ public class MigrateData extends AbstractChange {
             }
             int roll = (int) (count / (total / 1000));
 
-	    out.print(String.format(template, progressBuffer, carr[roll % carr.length], percent, (int) count, (int) total));
+        out.print(String.format(template, progressBuffer, carr[roll % carr.length], percent, (int) count, (int) total));
         }
     }
 
     @Override
     public String getConfirmationMessage() {
-	return "";
+    return "";
     }
 
     /**
@@ -806,10 +818,10 @@ public class MigrateData extends AbstractChange {
     }
 
     protected boolean isDebugEnabled() {
-	return getLog().getLogLevel() == LogLevel.DEBUG;
+    return getLog().getLogLevel() == LogLevel.DEBUG;
     }
 
     protected Logger getLog() {
-	return LogFactory.getLogger();
+    return LogFactory.getLogger();
     }
 }
