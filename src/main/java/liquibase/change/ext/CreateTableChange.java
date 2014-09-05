@@ -42,12 +42,12 @@ import java.util.List;
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
 /**
- * Creates a new table.
+ * Creates a new table. Override of existing change to ignore schema/catalog-specific application
  * 
  * @author Leo Przybylski
  */
+@DatabaseChange(name="createTable", description = "Create Table", priority = EXTENSION_PRIORITY)
 public class CreateTableChange extends liquibase.change.core.CreateTableChange {
-    @Override
     public int getPriority() {
         return EXTENSION_PRIORITY;
     }
