@@ -47,6 +47,10 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  * @author Leo Przybylski
  */
 public class CreateTableChange extends liquibase.change.core.CreateTableChange {
+    @Override
+    public int getPriority() {
+        return EXTENSION_PRIORITY;
+    }
 
     public CreateTableChange() {
     }
